@@ -1,0 +1,89 @@
+{
+  "info": {
+    "name": "Ledger Finance API (json-server)",
+    "description": "CRUD + query examples for the finance db.json. Set the baseUrl variable if your server is not on localhost:3000. Run each folder's 'Create' request first: it saves the new id into a collection variable that Get/Update/Replace/Delete then use.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "userId", "value": "1" },
+    { "key": "accountId", "value": "1" },
+    { "key": "categoryId", "value": "1" },
+    { "key": "transactionId", "value": "1" },
+    { "key": "budgetId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Users",
+      "item": [
+        { "name": "List users", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] } } },
+        { "name": "Get user", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] } } },
+        { "name": "Create user", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('userId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sara Khan\",\n  \"email\": \"sara@example.com\",\n  \"currency\": \"USD\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/users", "host": ["{{baseUrl}}"], "path": ["users"] } } },
+        { "name": "Update user (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sara K. Updated\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] } } },
+        { "name": "Replace user (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Sara Khan\",\n  \"email\": \"sara.khan@example.com\",\n  \"currency\": \"EUR\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] } } },
+        { "name": "Delete user (+ accounts, budgets)", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/users/{{userId}}?_dependent=accounts&_dependent=budgets", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"], "query": [{ "key": "_dependent", "value": "accounts" }, { "key": "_dependent", "value": "budgets" }] } } }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "item": [
+        { "name": "List accounts", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] } } },
+        { "name": "Get account", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["accounts", "{{accountId}}"] } } },
+        { "name": "Create account", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('accountId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"1\",\n  \"name\": \"Travel Fund\",\n  \"type\": \"savings\",\n  \"balance\": 1500,\n  \"currency\": \"USD\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/accounts", "host": ["{{baseUrl}}"], "path": ["accounts"] } } },
+        { "name": "Update account (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"balance\": 1750.5\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["accounts", "{{accountId}}"] } } },
+        { "name": "Replace account (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"1\",\n  \"name\": \"Travel Fund 2027\",\n  \"type\": \"savings\",\n  \"balance\": 2000,\n  \"currency\": \"USD\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/accounts/{{accountId}}", "host": ["{{baseUrl}}"], "path": ["accounts", "{{accountId}}"] } } },
+        { "name": "Delete account (+ transactions)", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/accounts/{{accountId}}?_dependent=transactions", "host": ["{{baseUrl}}"], "path": ["accounts", "{{accountId}}"], "query": [{ "key": "_dependent", "value": "transactions" }] } } }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        { "name": "List categories", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] } } },
+        { "name": "Get category", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["categories", "{{categoryId}}"] } } },
+        { "name": "Create category", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('categoryId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Health\",\n  \"type\": \"expense\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] } } },
+        { "name": "Update category (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Health & Fitness\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["categories", "{{categoryId}}"] } } },
+        { "name": "Replace category (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"name\": \"Health & Fitness\",\n  \"type\": \"expense\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/categories/{{categoryId}}", "host": ["{{baseUrl}}"], "path": ["categories", "{{categoryId}}"] } } },
+        { "name": "Delete category (+ transactions, budgets)", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/categories/{{categoryId}}?_dependent=transactions&_dependent=budgets", "host": ["{{baseUrl}}"], "path": ["categories", "{{categoryId}}"], "query": [{ "key": "_dependent", "value": "transactions" }, { "key": "_dependent", "value": "budgets" }] } } }
+      ]
+    },
+    {
+      "name": "Transactions",
+      "item": [
+        { "name": "List transactions", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] } } },
+        { "name": "Get transaction", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions/{{transactionId}}", "host": ["{{baseUrl}}"], "path": ["transactions", "{{transactionId}}"] } } },
+        { "name": "Create transaction (expense)", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('transactionId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"accountId\": \"1\",\n  \"categoryId\": \"4\",\n  \"type\": \"expense\",\n  \"amount\": 45.5,\n  \"description\": \"Pharmacy\",\n  \"date\": \"2026-11-09\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] } } },
+        { "name": "Create transaction (income)", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('transactionId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"accountId\": \"1\",\n  \"categoryId\": \"2\",\n  \"type\": \"income\",\n  \"amount\": 600,\n  \"description\": \"Logo design gig\",\n  \"date\": \"2026-11-09\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] } } },
+        { "name": "Update transaction (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"amount\": 99.99,\n  \"description\": \"Pharmacy (updated)\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/transactions/{{transactionId}}", "host": ["{{baseUrl}}"], "path": ["transactions", "{{transactionId}}"] } } },
+        { "name": "Replace transaction (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"accountId\": \"1\",\n  \"categoryId\": \"4\",\n  \"type\": \"expense\",\n  \"amount\": 120,\n  \"description\": \"Bulk groceries\",\n  \"date\": \"2026-11-09\"\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/transactions/{{transactionId}}", "host": ["{{baseUrl}}"], "path": ["transactions", "{{transactionId}}"] } } },
+        { "name": "Delete transaction", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/transactions/{{transactionId}}", "host": ["{{baseUrl}}"], "path": ["transactions", "{{transactionId}}"] } } }
+      ]
+    },
+    {
+      "name": "Budgets",
+      "item": [
+        { "name": "List budgets", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/budgets", "host": ["{{baseUrl}}"], "path": ["budgets"] } } },
+        { "name": "Get budget", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/budgets/{{budgetId}}", "host": ["{{baseUrl}}"], "path": ["budgets", "{{budgetId}}"] } } },
+        { "name": "Create budget", "event": [{ "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.collectionVariables.set('budgetId', pm.response.json().id);"] } }], "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"1\",\n  \"categoryId\": \"5\",\n  \"month\": \"2026-11\",\n  \"limit\": 200\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/budgets", "host": ["{{baseUrl}}"], "path": ["budgets"] } } },
+        { "name": "Update budget (PATCH)", "request": { "method": "PATCH", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"limit\": 500\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/budgets/{{budgetId}}", "host": ["{{baseUrl}}"], "path": ["budgets", "{{budgetId}}"] } } },
+        { "name": "Replace budget (PUT)", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"userId\": \"1\",\n  \"categoryId\": \"5\",\n  \"month\": \"2026-12\",\n  \"limit\": 250\n}", "options": { "raw": { "language": "json" } } }, "url": { "raw": "{{baseUrl}}/budgets/{{budgetId}}", "host": ["{{baseUrl}}"], "path": ["budgets", "{{budgetId}}"] } } },
+        { "name": "Delete budget", "request": { "method": "DELETE", "header": [], "url": { "raw": "{{baseUrl}}/budgets/{{budgetId}}", "host": ["{{baseUrl}}"], "path": ["budgets", "{{budgetId}}"] } } }
+      ]
+    },
+    {
+      "name": "Query examples",
+      "item": [
+        { "name": "Transactions of one account", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?accountId=1", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "accountId", "value": "1" }] } } },
+        { "name": "Only income", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?type=income", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "type", "value": "income" }] } } },
+        { "name": "Sort newest first", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?_sort=-date", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "_sort", "value": "-date" }] } } },
+        { "name": "Sort by amount desc, then date", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?_sort=-amount,date", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "_sort", "value": "-amount,date" }] } } },
+        { "name": "Paginate (page 1, 5 per page)", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?_page=1&_per_page=5", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "_page", "value": "1" }, { "key": "_per_page", "value": "5" }] } } },
+        { "name": "Amount >= 100", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?amount:gte=100", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "amount:gte", "value": "100" }] } } },
+        { "name": "Date range (November 2026)", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?date:gte=2026-11-01&date:lte=2026-11-30", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "date:gte", "value": "2026-11-01" }, { "key": "date:lte", "value": "2026-11-30" }] } } },
+        { "name": "Budgets for a month", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/budgets?month=2026-11", "host": ["{{baseUrl}}"], "path": ["budgets"], "query": [{ "key": "month", "value": "2026-11" }] } } },
+        { "name": "Accounts with their transactions", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/accounts?_embed=transactions", "host": ["{{baseUrl}}"], "path": ["accounts"], "query": [{ "key": "_embed", "value": "transactions" }] } } },
+        { "name": "User with their accounts", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/users/1?_embed=accounts", "host": ["{{baseUrl}}"], "path": ["users", "1"], "query": [{ "key": "_embed", "value": "accounts" }] } } },
+        { "name": "Transactions with account + category", "request": { "method": "GET", "header": [], "url": { "raw": "{{baseUrl}}/transactions?_embed=account&_embed=category", "host": ["{{baseUrl}}"], "path": ["transactions"], "query": [{ "key": "_embed", "value": "account" }, { "key": "_embed", "value": "category" }] } } }
+      ]
+    }
+  ]
+}

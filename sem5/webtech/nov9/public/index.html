@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ledger — Finance Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fb;--panel:#ffffff;--panel-2:#f0f2fa;--border:#e4e7f2;--text:#141726;--muted:#6b7190;
+  --accent:#6366f1;--accent-2:#8b5cf6;--green:#10b981;--red:#f43f5e;--amber:#f59e0b;
+  --shadow:0 1px 2px rgba(20,23,38,.04),0 8px 24px rgba(20,23,38,.06);
+  --radius:16px;
+}
+:root[data-theme="dark"]{
+  --bg:#0b0d17;--panel:#131626;--panel-2:#1a1e33;--border:#242844;--text:#eef0ff;--muted:#8c92b5;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 12px 32px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;
+  background-image:radial-gradient(900px 400px at 85% -10%,rgba(99,102,241,.14),transparent),radial-gradient(700px 400px at -10% 110%,rgba(16,185,129,.10),transparent);background-attachment:fixed}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.app{display:grid;grid-template-columns:248px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 16px;display:flex;flex-direction:column;gap:22px;border-right:1px solid var(--border);background:color-mix(in srgb,var(--panel) 80%,transparent);backdrop-filter:blur(14px)}
+.brand{display:flex;align-items:center;gap:10px;padding:0 8px;font-weight:700;font-size:18px;letter-spacing:-.02em}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.45)}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;color:var(--muted);font-weight:500;text-align:left;transition:.15s}
+.nav button:hover{background:var(--panel-2);color:var(--text)}
+.nav button.active{background:linear-gradient(135deg,rgba(99,102,241,.16),rgba(139,92,246,.12));color:var(--accent);font-weight:600}
+.nav .count{margin-left:auto;font-size:11px;background:var(--panel-2);padding:1px 8px;border-radius:99px;color:var(--muted)}
+.side-foot{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+.conn{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;background:var(--panel-2);font-size:12px;color:var(--muted);text-align:left;width:100%}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+.dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(244,63,94,.18)}
+.conn span.u{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.main{padding:28px 32px 60px;min-width:0}
+.topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:24px}
+.topbar h1{font-size:26px;letter-spacing:-.03em;font-weight:700}
+.topbar .sub{color:var(--muted);font-size:13px}
+.spacer{flex:1}
+.search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:0 12px;height:40px;min-width:220px;box-shadow:var(--shadow)}
+.search input{border:0;outline:0;background:none;width:100%}
+.search kbd{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:0 6px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:12px;font-weight:600;transition:.15s;border:1px solid var(--border);background:var(--panel);box-shadow:var(--shadow)}
+.btn:hover{transform:translateY(-1px)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent;box-shadow:0 8px 20px rgba(99,102,241,.4)}
+.btn.danger{background:var(--red);color:#fff;border-color:transparent}
+.btn.sm{height:32px;padding:0 10px;font-size:13px}
+.icon-btn{width:32px;height:32px;border-radius:9px;display:inline-grid;place-items:center;color:var(--muted);transition:.15s}
+.icon-btn:hover{background:var(--panel-2);color:var(--text)}
+.icon-btn.del:hover{background:rgba(244,63,94,.12);color:var(--red)}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.card-h{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 0}
+.card-h h3{font-size:15px;font-weight:600}
+.card-b{padding:16px 20px 20px}
+.grid-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:16px}
+.stat{padding:18px 20px;position:relative;overflow:hidden}
+.stat .lbl{color:var(--muted);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px}
+.stat .val{font-size:28px;font-weight:700;letter-spacing:-.03em;margin-top:8px}
+.stat .chip{position:absolute;right:16px;top:16px;width:36px;height:36px;border-radius:11px;display:grid;place-items:center}
+.stat.green .chip{background:rgba(16,185,129,.14);color:var(--green)}
+.stat.red .chip{background:rgba(244,63,94,.14);color:var(--red)}
+.stat.blue .chip{background:rgba(99,102,241,.14);color:var(--accent)}
+.stat.amber .chip{background:rgba(245,158,11,.14);color:var(--amber)}
+.cols{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px}
+.cols-3{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.select{height:36px;border-radius:10px;border:1px solid var(--border);background:var(--panel);padding:0 10px;outline:0}
+.legend{display:flex;gap:14px;color:var(--muted);font-size:12px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+.bars text{fill:var(--muted);font-size:11px}
+.row-bar{margin-bottom:14px}
+.row-bar .top{display:flex;justify-content:space-between;margin-bottom:6px;font-weight:500}
+.row-bar .top small{color:var(--muted);font-weight:400}
+.track{height:8px;background:var(--panel-2);border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+.fill.warn{background:linear-gradient(90deg,var(--amber),#fb923c)}
+.fill.over{background:linear-gradient(90deg,var(--red),#fb7185)}
+.list-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px dashed var(--border)}
+.list-item:last-child{border-bottom:0}
+.avatar{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-weight:700;color:#fff;flex:none;background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+.avatar.in{background:linear-gradient(135deg,#10b981,#34d399)}
+.avatar.out{background:linear-gradient(135deg,#f43f5e,#fb7185)}
+.li-main{flex:1;min-width:0}
+.li-main b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-main small{color:var(--muted)}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:500}
+.pos{color:var(--green)}.neg{color:var(--red)}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:14px 16px;border-bottom:1px solid var(--border)}
+.seg{display:inline-flex;background:var(--panel-2);padding:3px;border-radius:11px}
+.seg button{padding:5px 14px;border-radius:8px;font-weight:500;color:var(--muted)}
+.seg button.on{background:var(--panel);color:var(--text);box-shadow:var(--shadow)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;padding:12px 16px;white-space:nowrap;user-select:none}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--text)}
+td{padding:13px 16px;border-top:1px solid var(--border);vertical-align:middle}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:var(--panel-2)}
+td.actions,th.actions{text-align:right;white-space:nowrap;width:1%}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:var(--panel-2);color:var(--muted);text-transform:capitalize}
+.badge.income{background:rgba(16,185,129,.14);color:var(--green)}
+.badge.expense{background:rgba(244,63,94,.14);color:var(--red)}
+.badge.acc{background:rgba(99,102,241,.14);color:var(--accent)}
+.cell-main{display:flex;align-items:center;gap:12px}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);color:var(--muted);font-size:13px}
+.pager .pg{display:flex;gap:6px}
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .big{font-size:40px;margin-bottom:8px}
+.overlay{position:fixed;inset:0;background:rgba(8,10,22,.55);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.overlay.open{display:flex;animation:fade .15s}
+.modal{width:100%;max-width:480px;background:var(--panel);border:1px solid var(--border);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.4);animation:pop .2s;max-height:92vh;overflow:auto}
+.modal header{display:flex;align-items:center;justify-content:space-between;padding:20px 24px 0}
+.modal header h2{font-size:18px;letter-spacing:-.02em}
+.modal form,.modal .body{padding:18px 24px 24px;display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.field input,.field select{height:42px;border-radius:11px;border:1px solid var(--border);background:var(--panel-2);padding:0 12px;outline:0;transition:.15s;width:100%}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(99,102,241,.18);background:var(--panel)}
+.modal .foot{display:flex;justify-content:flex-end;gap:10px;margin-top:6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#toasts{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:10px;z-index:99}
+.toast{display:flex;align-items:center;gap:10px;background:var(--text);color:var(--bg);padding:12px 16px;border-radius:12px;box-shadow:var(--shadow);animation:pop .2s;font-weight:500}
+.toast.err{background:var(--red);color:#fff}
+.skeleton{height:120px;border-radius:var(--radius);background:linear-gradient(90deg,var(--panel) 25%,var(--panel-2) 50%,var(--panel) 75%);background-size:200% 100%;animation:sh 1.2s infinite}
+.errbox{max-width:560px;margin:60px auto;padding:30px;text-align:center}
+.errbox code{background:var(--panel-2);padding:2px 8px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:12px}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{opacity:0;transform:translateY(8px) scale(.98)}}
+@keyframes sh{to{background-position:-200% 0}}
+@media(max-width:980px){.cols,.cols-3{grid-template-columns:1fr}}
+@media(max-width:860px){
+  .app{grid-template-columns:1fr}
+  .sidebar{position:static;height:auto;flex-direction:row;align-items:center;overflow-x:auto;padding:12px;gap:12px;border-right:0;border-bottom:1px solid var(--border)}
+  .brand span,.side-foot .conn,.nav .count{display:none}
+  .nav{flex-direction:row}.nav button span{display:none}
+  .side-foot{margin:0 0 0 auto;flex-direction:row}
+  .main{padding:20px 16px 60px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo"><svg class="i" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><span>Ledger</span></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="side-foot">
+      <button class="conn" id="conn" title="Change API URL"><i class="dot" id="dot"></i><span class="u" id="connText">Connecting…</span></button>
+      <button class="btn sm" id="theme"><svg class="i" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg></button>
+    </div>
+  </aside>
+  <main class="main">
+    <div class="topbar" id="topbar"></div>
+    <div id="view"><div class="skeleton"></div></div>
+  </main>
+</div>
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+<div id="toasts"></div>
+
+<script>
+/* ───────────── Config ───────────── */
+const API = (localStorage.getItem('ledger_api') || (location.protocol === 'file:' ? 'http://localhost:3000' : location.origin)).replace(/\/$/, '');
+const PAGE_SIZE = 10;
+
+/* ───────────── Helpers ───────────── */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = (n, c = 'USD') => { try { return new Intl.NumberFormat('en-US', {style:'currency', currency:c}).format(Number(n)||0); } catch { return (Number(n)||0).toFixed(2); } };
+const fdate = d => d ? new Date(d + 'T00:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) : '—';
+const fmonth = m => m ? new Date(m + '-01T00:00:00').toLocaleDateString('en-US', {month:'long', year:'numeric'}) : '—';
+const sum = (a, f) => a.reduce((s, x) => s + (Number(f(x)) || 0), 0);
+
+const ICONS = {
+  dashboard:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',
+  transactions:'<path d="M7 7h13l-3-3M17 17H4l3 3"/>',
+  accounts:'<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h3"/>',
+  categories:'<path d="M20.6 13.4l-7.2 7.2a2 2 0 01-2.8 0L3 13V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/>',
+  budgets:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  users:'<path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M21 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', edit:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6"/>',
+  down:'<path d="M12 5v14M19 12l-7 7-7-7"/>', up:'<path d="M12 19V5M5 12l7-7 7 7"/>',
+  wallet:'<path d="M20 7H5a2 2 0 010-4h13v4zM3 5v14a2 2 0 002 2h15V7"/><circle cx="16" cy="14" r="1.2"/>',
+  save:'<path d="M12 2v14M5 11l7 7 7-7M5 22h14"/>', download:'<path d="M12 3v12M6 11l6 6 6-6M4 21h16"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>', check:'<path d="M20 6L9 17l-5-5"/>', x:'<path d="M18 6L6 18M6 6l12 12"/>'
+};
+const icon = n => `<svg class="i" viewBox="0 0 24 24">${ICONS[n] || ''}</svg>`;
+
+/* ───────────── API ───────────── */
+async function http(path, opts = {}) {
+  const res = await fetch(`${API}/${path}`, { headers: {'Content-Type':'application/json'}, ...opts });
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+  return res.status === 204 ? null : res.json();
+}
+const api = {
+  list: r => http(r),
+  create: (r, b) => http(r, {method:'POST', body:JSON.stringify(b)}),
+  update: (r, id, b) => http(`${r}/${id}`, {method:'PATCH', body:JSON.stringify(b)}),
+  remove: (r, id, dep) => http(`${r}/${id}${dep?.length ? '?' + dep.map(d => '_dependent=' + d).join('&') : ''}`, {method:'DELETE'})
+};
+
+/* ───────────── State ───────────── */
+const state = { data:{}, view:'dashboard', q:'', page:1, sort:{}, filters:{type:'all', accountId:'all'}, month:'all' };
+const get = (res, id) => (state.data[res] || []).find(x => String(x.id) === String(id));
+const nameOf = (res, id) => { const x = get(res, id); return x ? (x.name || x.description || x.id) : '—'; };
+
+/* ───────────── Resource definitions ───────────── */
+const typeBadge = t => `<span class="badge ${esc(t)}">${esc(t)}</span>`;
+const R = {
+  transactions: {
+    label:'Transactions', singular:'Transaction', sub:'Every dollar in and out', depends:[],
+    fields:[
+      {k:'description', l:'Description', t:'text', req:1, ph:'e.g. Weekly groceries'},
+      {k:'amount', l:'Amount', t:'number', step:'0.01', min:'0', req:1, half:1},
+      {k:'type', l:'Type', t:'select', opts:['expense','income'], req:1, half:1},
+      {k:'categoryId', l:'Category', t:'ref', ref:'categories', req:1, half:1},
+      {k:'accountId', l:'Account', t:'ref', ref:'accounts', req:1, half:1},
+      {k:'date', l:'Date', t:'date', req:1}
+    ],
+    defaults:() => ({type:'expense', date:new Date().toISOString().slice(0,10)}),
+    sort:{key:'date', dir:-1},
+    cols:[
+      {k:'description', l:'Description', r:t => `<div class="cell-main"><div class="avatar ${t.type==='income'?'in':'out'}">${icon(t.type==='income'?'down':'up')}</div><div class="li-main"><b>${esc(t.description)}</b><small>${esc(nameOf('accounts',t.accountId))}</small></div></div>`, s:t => t.description},
+      {k:'categoryId', l:'Category', r:t => `<span class="badge">${esc(nameOf('categories',t.categoryId))}</span>`, s:t => nameOf('categories',t.categoryId)},
+      {k:'date', l:'Date', r:t => fdate(t.date)},
+      {k:'type', l:'Type', r:t => typeBadge(t.type)},
+      {k:'amount', l:'Amount', r:t => `<span class="mono ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'−'}${money(t.amount)}</span>`}
+    ]
+  },
+  accounts: {
+    label:'Accounts', singular:'Account', sub:'Where your money lives', depends:['transactions'],
+    fields:[
+      {k:'name', l:'Account name', t:'text', req:1, ph:'e.g. Main Checking'},
+      {k:'userId', l:'Owner', t:'ref', ref:'users', req:1},
+      {k:'type', l:'Type', t:'select', opts:['checking','savings','credit_card','investment','cash'], req:1, half:1},
+      {k:'currency', l:'Currency', t:'select', opts:['USD','EUR','GBP','BDT','INR','JPY'], req:1, half:1},
+      {k:'balance', l:'Balance', t:'number', step:'0.01', req:1}
+    ],
+    defaults:() => ({type:'checking', currency:'USD', balance:0}),
+    sort:{key:'name', dir:1},
+    cols:[
+      {k:'name', l:'Account', r:a => `<div class="cell-main"><div class="avatar">${icon('accounts')}</div><b>${esc(a.name)}</b></div>`},
+      {k:'userId', l:'Owner', r:a => esc(nameOf('users',a.userId)), s:a => nameOf('users',a.userId)},
+      {k:'type', l:'Type', r:a => `<span class="badge acc">${esc(String(a.type).replace('_',' '))}</span>`},
+      {k:'balance', l:'Balance', r:a => `<span class="mono ${a.balance<0?'neg':''}">${money(a.balance,a.currency)}</span>`}
+    ]
+  },
+  categories: {
+    label:'Categories', singular:'Category', sub:'Organize your cash flow', depends:['transactions','budgets'],
+    fields:[
+      {k:'name', l:'Name', t:'text', req:1, ph:'e.g. Groceries'},
+      {k:'type', l:'Type', t:'select', opts:['expense','income'], req:1}
+    ],
+    defaults:() => ({type:'expense'}),
+    sort:{key:'name', dir:1},
+    cols:[
+      {k:'name', l:'Category', r:c => `<div class="cell-main"><div class="avatar ${c.type==='income'?'in':'out'}">${esc((c.name||'?')[0].toUpperCase())}</div><b>${esc(c.name)}</b></div>`},
+      {k:'type', l:'Type', r:c => typeBadge(c.type)},
+      {k:'_n', l:'Transactions', r:c => state.data.transactions.filter(t => String(t.categoryId)===String(c.id)).length, s:c => state.data.transactions.filter(t => String(t.categoryId)===String(c.id)).length}
+    ]
+  },
+  budgets: {
+    label:'Budgets', singular:'Budget', sub:'Stay ahead of your spending', depends:[],
+    fields:[
+      {k:'userId', l:'User', t:'ref', ref:'users', req:1},
+      {k:'categoryId', l:'Category', t:'ref', ref:'categories', req:1, filter:c => c.type==='expense'},
+      {k:'month', l:'Month', t:'month', req:1, half:1},
+      {k:'limit', l:'Limit', t:'number', step:'0.01', min:'0', req:1, half:1}
+    ],
+    defaults:() => ({month:new Date().toISOString().slice(0,7)}),
+    sort:{key:'month', dir:-1},
+    cols:[
+      {k:'categoryId', l:'Category', r:b => `<b>${esc(nameOf('categories',b.categoryId))}</b><br><small style="color:var(--muted)">${esc(nameOf('users',b.userId))}</small>`, s:b => nameOf('categories',b.categoryId)},
+      {k:'month', l:'Month', r:b => fmonth(b.month)},
+      {k:'limit', l:'Limit', r:b => `<span class="mono">${money(b.limit)}</span>`},
+      {k:'_spent', l:'Progress', r:b => { const s = spent(b), p = b.limit ? s/b.limit*100 : 0; return `<div style="min-width:170px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span class="mono">${money(s)}</span><span style="color:var(--muted)">${Math.round(p)}%</span></div><div class="track"><div class="fill ${p>100?'over':p>80?'warn':''}" style="width:${Math.min(p,100)}%"></div></div></div>`; }, s:b => spent(b)}
+    ]
+  },
+  users: {
+    label:'Users', singular:'User', sub:'People using this ledger', depends:['accounts','budgets'],
+    fields:[
+      {k:'name', l:'Full name', t:'text', req:1},
+      {k:'email', l:'Email', t:'email', req:1},
+      {k:'currency', l:'Currency', t:'select', opts:['USD','EUR','GBP','BDT','INR','JPY'], req:1}
+    ],
+    defaults:() => ({currency:'USD'}),
+    sort:{key:'name', dir:1},
+    cols:[
+      {k:'name', l:'User', r:u => `<div class="cell-main"><div class="avatar">${esc((u.name||'?')[0].toUpperCase())}</div><div class="li-main"><b>${esc(u.name)}</b><small>${esc(u.email)}</small></div></div>`},
+      {k:'currency', l:'Currency', r:u => `<span class="badge">${esc(u.currency)}</span>`},
+      {k:'_a', l:'Accounts', r:u => state.data.accounts.filter(a => String(a.userId)===String(u.id)).length, s:u => state.data.accounts.filter(a => String(a.userId)===String(u.id)).length},
+      {k:'_b', l:'Net worth', r:u => `<span class="mono">${money(sum(state.data.accounts.filter(a => String(a.userId)===String(u.id)), a => a.balance))}</span>`, s:u => sum(state.data.accounts.filter(a => String(a.userId)===String(u.id)), a => a.balance)}
+    ]
+  }
+};
+const NAV = ['dashboard','transactions','accounts','categories','budgets','users'];
+
+function spent(b) {
+  const accIds = state.data.accounts.filter(a => String(a.userId) === String(b.userId)).map(a => String(a.id));
+  return sum(state.data.transactions.filter(t => t.type==='expense' && String(t.categoryId)===String(b.categoryId) && String(t.date||'').startsWith(b.month) && accIds.includes(String(t.accountId))), t => t.amount);
+}
+
+/* ───────────── UI primitives ───────────── */
+function toast(msg, err) {
+  const el = document.createElement('div');
+  el.className = 'toast' + (err ? ' err' : '');
+  el.innerHTML = `${icon(err ? 'x' : 'check')}<span>${esc(msg)}</span>`;
+  $('#toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
+const overlay = $('#overlay');
+function openModal(html) { $('#modal').innerHTML = html; overlay.classList.add('open'); setTimeout(() => $('#modal input, #modal select')?.focus(), 30); }
+function closeModal() { overlay.classList.remove('open'); }
+overlay.addEventListener('mousedown', e => { if (e.target === overlay) closeModal(); });
+
+/* ───────────── Data loading ───────────── */
+async function loadAll() {
+  const names = ['users','accounts','categories','transactions','budgets'];
+  const res = await Promise.all(names.map(n => api.list(n)));
+  names.forEach((n, i) => state.data[n] = res[i]);
+}
+async function reload(...names) {
+  await Promise.all(names.map(async n => state.data[n] = await api.list(n)));
+}
+
+/* ───────────── Navigation / shell ───────────── */
+function renderNav() {
+  $('#nav').innerHTML = NAV.map(v => {
+    const label = v === 'dashboard' ? 'Dashboard' : R[v].label;
+    const count = v === 'dashboard' ? '' : `<span class="count">${(state.data[v]||[]).length}</span>`;
+    return `<button data-v="${v}" class="${state.view===v?'active':''}">${icon(v)}<span>${label}</span>${count}</button>`;
+  }).join('');
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(b.dataset.v); });
+function go(v) { state.view = v; state.q = ''; state.page = 1; state.filters = {type:'all', accountId:'all'}; render(); }
+
+function render() {
+  renderNav();
+  state.view === 'dashboard' ? renderDashboard() : renderResource(state.view);
+}
+
+/* ───────────── Dashboard ───────────── */
+function renderDashboard() {
+  const d = state.data;
+  const months = [...new Set(d.transactions.map(t => String(t.date||'').slice(0,7)).filter(Boolean))].sort();
+  const txs = state.month === 'all' ? d.transactions : d.transactions.filter(t => String(t.date).startsWith(state.month));
+  const income = sum(txs.filter(t => t.type==='income'), t => t.amount);
+  const expense = sum(txs.filter(t => t.type==='expense'), t => t.amount);
+  const net = sum(d.accounts, a => a.balance);
+  const rate = income ? Math.round((income - expense) / income * 100) : 0;
+
+  $('#topbar').innerHTML = `
+    <div><h1>Dashboard</h1><div class="sub">${new Date().toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'})}</div></div>
+    <div class="spacer"></div>
+    <select class="select" id="monthSel"><option value="all">All time</option>${months.slice().reverse().map(m => `<option value="${m}" ${state.month===m?'selected':''}>${fmonth(m)}</option>`).join('')}</select>
+    <button class="btn primary" id="quickAdd">${icon('plus')} New transaction</button>`;
+
+  // category spending
+  const byCat = {};
+  txs.filter(t => t.type==='expense').forEach(t => byCat[t.categoryId] = (byCat[t.categoryId]||0) + Number(t.amount));
+  const catRows = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
+  const maxCat = catRows[0]?.[1] || 1;
+  const catHtml = catRows.length ? catRows.map(([id, v]) => {
+    const budget = state.month !== 'all' ? d.budgets.find(b => String(b.categoryId)===String(id) && b.month===state.month) : null;
+    const pct = budget ? v / budget.limit * 100 : v / maxCat * 100;
+    return `<div class="row-bar"><div class="top"><span>${esc(nameOf('categories',id))}</span><span class="mono">${money(v)} ${budget?`<small>/ ${money(budget.limit)}</small>`:''}</span></div><div class="track"><div class="fill ${budget&&pct>100?'over':budget&&pct>80?'warn':''}" style="width:${Math.min(pct,100)}%"></div></div></div>`;
+  }).join('') : `<div class="empty"><div class="big">🧾</div>No expenses for this period</div>`;
+
+  // monthly chart (last 6)
+  const last = months.slice(-6);
+  const series = last.map(m => ({m, i:sum(d.transactions.filter(t => t.type==='income' && String(t.date).startsWith(m)), t=>t.amount), e:sum(d.transactions.filter(t => t.type==='expense' && String(t.date).startsWith(m)), t=>t.amount)}));
+  const maxV = Math.max(1, ...series.flatMap(s => [s.i, s.e]));
+  const W = 600, H = 230, pad = 28, bw = 26, gap = (W - pad*2) / Math.max(series.length,1);
+  const chart = series.length ? `<svg class="bars" viewBox="0 0 ${W} ${H}" width="100%">
+    ${[0,.25,.5,.75,1].map(f => { const y = H-30-(H-60)*f; return `<line x1="${pad}" x2="${W-pad}" y1="${y}" y2="${y}" stroke="var(--border)" stroke-dasharray="3 5"/><text x="0" y="${y+4}">${f?Math.round(maxV*f/1000*10)/10+'k':'0'}</text>`; }).join('')}
+    ${series.map((s, idx) => { const cx = pad + gap*idx + gap/2, hi = (H-60)*s.i/maxV, he = (H-60)*s.e/maxV;
+      return `<rect x="${cx-bw-2}" y="${H-30-hi}" width="${bw}" height="${hi}" rx="6" fill="var(--green)"><title>Income ${money(s.i)}</title></rect>
+              <rect x="${cx+2}" y="${H-30-he}" width="${bw}" height="${he}" rx="6" fill="var(--red)"><title>Expenses ${money(s.e)}</title></rect>
+              <text x="${cx}" y="${H-8}" text-anchor="middle">${new Date(s.m+'-01').toLocaleDateString('en-US',{month:'short'})}</text>`; }).join('')}
+  </svg>` : `<div class="empty">No data yet</div>`;
+
+  const recent = d.transactions.slice().sort((a,b) => String(b.date).localeCompare(String(a.date))).slice(0,6);
+
+  $('#view').innerHTML = `
+    <div class="grid-stats">
+      <div class="card stat blue"><div class="lbl">Total balance</div><div class="val">${money(net)}</div><div class="chip">${icon('wallet')}</div></div>
+      <div class="card stat green"><div class="lbl">Income</div><div class="val pos">${money(income)}</div><div class="chip">${icon('down')}</div></div>
+      <div class="card stat red"><div class="lbl">Expenses</div><div class="val neg">${money(expense)}</div><div class="chip">${icon('up')}</div></div>
+      <div class="card stat amber"><div class="lbl">Savings rate</div><div class="val">${rate}%</div><div class="chip">${icon('save')}</div></div>
+    </div>
+    <div class="cols">
+      <div class="card"><div class="card-h"><h3>Cash flow</h3><div class="legend"><span><i style="background:var(--green)"></i>Income</span><span><i style="background:var(--red)"></i>Expenses</span></div></div><div class="card-b">${chart}</div></div>
+      <div class="card"><div class="card-h"><h3>Spending by category</h3></div><div class="card-b">${catHtml}</div></div>
+    </div>
+    <div class="cols-3">
+      <div class="card"><div class="card-h"><h3>Recent transactions</h3><button class="btn sm" data-go="transactions">View all</button></div><div class="card-b">
+        ${recent.map(t => `<div class="list-item"><div class="avatar ${t.type==='income'?'in':'out'}">${icon(t.type==='income'?'down':'up')}</div><div class="li-main"><b>${esc(t.description)}</b><small>${esc(nameOf('categories',t.categoryId))} · ${fdate(t.date)}</small></div><span class="mono ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'−'}${money(t.amount)}</span></div>`).join('') || '<div class="empty">Nothing yet</div>'}
+      </div></div>
+      <div class="card"><div class="card-h"><h3>Accounts</h3><button class="btn sm" data-go="accounts">Manage</button></div><div class="card-b">
+        ${d.accounts.map(a => `<div class="list-item"><div class="avatar">${icon('accounts')}</div><div class="li-main"><b>${esc(a.name)}</b><small>${esc(nameOf('users',a.userId))} · ${esc(String(a.type).replace('_',' '))}</small></div><span class="mono ${a.balance<0?'neg':''}">${money(a.balance,a.currency)}</span></div>`).join('') || '<div class="empty">No accounts</div>'}
+      </div></div>
+    </div>`;
+
+  $('#monthSel').onchange = e => { state.month = e.target.value; renderDashboard(); };
+  $('#quickAdd').onclick = () => openForm('transactions');
+  $('#view').querySelectorAll('[data-go]').forEach(b => b.onclick = () => go(b.dataset.go));
+}
+
+/* ───────────── Resource table ───────────── */
+function rowText(res, row) {
+  const def = R[res];
+  return (Object.values(row).join(' ') + ' ' + def.fields.filter(f => f.t === 'ref').map(f => nameOf(f.ref, row[f.k])).join(' ')).toLowerCase();
+}
+function viewRows(res) {
+  const def = R[res];
+  let rows = (state.data[res] || []).slice();
+  if (res === 'transactions') {
+    if (state.filters.type !== 'all') rows = rows.filter(r => r.type === state.filters.type);
+    if (state.filters.accountId !== 'all') rows = rows.filter(r => String(r.accountId) === state.filters.accountId);
+  }
+  if (state.q) rows = rows.filter(r => rowText(res, r).includes(state.q.toLowerCase()));
+  const s = state.sort[res] || def.sort;
+  const col = def.cols.find(c => c.k === s.key);
+  const val = r => col?.s ? col.s(r) : r[s.key];
+  rows.sort((a, b) => { const x = val(a), y = val(b); const c = typeof x === 'number' && typeof y === 'number' ? x - y : String(x ?? '').localeCompare(String(y ?? ''), undefined, {numeric:true}); return c * s.dir; });
+  return rows;
+}
+
+function renderResource(res) {
+  const def = R[res];
+  $('#topbar').innerHTML = `
+    <div><h1>${def.label}</h1><div class="sub">${def.sub}</div></div>
+    <div class="spacer"></div>
+    <label class="search">${icon('search')}<input id="q" placeholder="Search ${def.label.toLowerCase()}…" value="${esc(state.q)}"><kbd>/</kbd></label>
+    <button class="btn" id="exp">${icon('download')} CSV</button>
+    <button class="btn primary" id="add">${icon('plus')} New ${def.singular.toLowerCase()}</button>`;
+  $('#q').oninput = e => { state.q = e.target.value; state.page = 1; drawTable(res); };
+  $('#add').onclick = () => openForm(res);
+  $('#exp').onclick = () => exportCSV(res);
+  $('#view').innerHTML = `<div class="card" id="tcard"></div>`;
+  drawTable(res);
+}
+
+function drawTable(res) {
+  const def = R[res];
+  const rows = viewRows(res);
+  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  state.page = Math.min(state.page, pages);
+  const slice = rows.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
+  const s = state.sort[res] || def.sort;
+
+  const filters = res === 'transactions' ? `
+    <div class="toolbar">
+      <div class="seg" id="typeSeg">${['all','income','expense'].map(t => `<button data-t="${t}" class="${state.filters.type===t?'on':''}">${t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div>
+      <select class="select" id="accSel"><option value="all">All accounts</option>${state.data.accounts.map(a => `<option value="${esc(a.id)}" ${state.filters.accountId===String(a.id)?'selected':''}>${esc(a.name)}</option>`).join('')}</select>
+      <div class="spacer"></div>
+      <span style="color:var(--muted)">Net of view: <b class="mono ${sum(rows,t=>t.type==='income'?t.amount:-t.amount)>=0?'pos':'neg'}">${money(sum(rows, t => t.type==='income' ? t.amount : -t.amount))}</b></span>
+    </div>` : '';
+
+  const body = slice.length ? `
+    <div class="table-wrap"><table>
+      <thead><tr>${def.cols.map(c => `<th class="sortable" data-k="${c.k}">${c.l}${s.key===c.k ? (s.dir>0?' ↑':' ↓') : ''}</th>`).join('')}<th class="actions"></th></tr></thead>
+      <tbody>${slice.map(r => `<tr>${def.cols.map(c => `<td>${c.r(r)}</td>`).join('')}<td class="actions">
+        <button class="icon-btn" data-edit="${esc(r.id)}" title="Edit">${icon('edit')}</button>
+        <button class="icon-btn del" data-del="${esc(r.id)}" title="Delete">${icon('trash')}</button></td></tr>`).join('')}</tbody>
+    </table></div>
+    <div class="pager"><span>${(state.page-1)*PAGE_SIZE+1}–${Math.min(state.page*PAGE_SIZE, rows.length)} of ${rows.length}</span>
+      <div class="pg"><button class="btn sm" id="prev" ${state.page<=1?'disabled':''}>Previous</button><button class="btn sm" id="next" ${state.page>=pages?'disabled':''}>Next</button></div></div>`
+    : `<div class="empty"><div class="big">📭</div><b>No ${def.label.toLowerCase()} found</b><p>Try another search, or add a new ${def.singular.toLowerCase()}.</p></div>`;
+
+  $('#tcard').innerHTML = filters + body;
+
+  $('#tcard').querySelectorAll('th.sortable').forEach(th => th.onclick = () => {
+    const k = th.dataset.k, cur = state.sort[res] || def.sort;
+    state.sort[res] = {key:k, dir: cur.key === k ? -cur.dir : 1}; drawTable(res);
+  });
+  $('#tcard').querySelectorAll('[data-edit]').forEach(b => b.onclick = () => openForm(res, get(res, b.dataset.edit)));
+  $('#tcard').querySelectorAll('[data-del]').forEach(b => b.onclick = () => confirmDelete(res, get(res, b.dataset.del)));
+  $('#typeSeg')?.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { state.filters.type = b.dataset.t; state.page = 1; drawTable(res); } });
+  $('#accSel') && ($('#accSel').onchange = e => { state.filters.accountId = e.target.value; state.page = 1; drawTable(res); });
+  $('#prev') && ($('#prev').onclick = () => { state.page--; drawTable(res); });
+  $('#next') && ($('#next').onclick = () => { state.page++; drawTable(res); });
+}
+
+/* ───────────── Create / edit form ───────────── */
+function fieldHtml(f, row, res) {
+  const v = row[f.k] ?? '';
+  const id = 'f_' + f.k;
+  let input;
+  if (f.t === 'select') {
+    input = `<select id="${id}" name="${f.k}" ${f.req?'required':''}>${f.opts.map(o => `<option value="${esc(o)}" ${String(v)===o?'selected':''}>${esc(o.replace('_',' '))}</option>`).join('')}</select>`;
+  } else if (f.t === 'ref') {
+    let items = state.data[f.ref] || [];
+    if (f.filter) items = items.filter(f.filter);
+    if (res === 'transactions' && f.k === 'categoryId') items = items.filter(c => c.type === (row.type || 'expense'));
+    input = `<select id="${id}" name="${f.k}" ${f.req?'required':''}><option value="" disabled ${v===''?'selected':''}>Select…</option>${items.map(i => `<option value="${esc(i.id)}" ${String(v)===String(i.id)?'selected':''}>${esc(i.name || i.id)}</option>`).join('')}</select>`;
+  } else {
+    input = `<input id="${id}" name="${f.k}" type="${f.t}" value="${esc(v)}" ${f.step?`step="${f.step}"`:''} ${f.min!==undefined?`min="${f.min}"`:''} ${f.ph?`placeholder="${esc(f.ph)}"`:''} ${f.req?'required':''}>`;
+  }
+  return `<div class="field"><label for="${id}">${f.l}</label>${input}</div>`;
+}
+
+function openForm(res, row) {
+  const def = R[res], editing = !!row;
+  const data = editing ? row : def.defaults();
+  // group half-width fields in pairs
+  let html = '', i = 0;
+  while (i < def.fields.length) {
+    const f = def.fields[i];
+    if (f.half && def.fields[i+1]?.half) { html += `<div class="two">${fieldHtml(f, data, res)}${fieldHtml(def.fields[i+1], data, res)}</div>`; i += 2; }
+    else { html += fieldHtml(f, data, res); i++; }
+  }
+  openModal(`
+    <header><h2>${editing ? 'Edit' : 'New'} ${def.singular.toLowerCase()}</h2><button class="icon-btn" id="mx">${icon('x')}</button></header>
+    <form id="form">${html}<div class="foot"><button type="button" class="btn" id="cancel">Cancel</button><button class="btn primary" type="submit">${editing ? 'Save changes' : 'Create'}</button></div></form>`);
+  $('#mx').onclick = $('#cancel').onclick = closeModal;
+
+  // transaction type → refilter categories
+  if (res === 'transactions') {
+    $('#f_type').onchange = e => {
+      const cur = $('#f_categoryId').value;
+      const items = state.data.categories.filter(c => c.type === e.target.value);
+      $('#f_categoryId').innerHTML = `<option value="" disabled selected>Select…</option>` + items.map(c => `<option value="${esc(c.id)}" ${String(c.id)===cur?'selected':''}>${esc(c.name)}</option>`).join('');
+    };
+  }
+
+  $('#form').onsubmit = async e => {
+    e.preventDefault();
+    const fd = new FormData(e.target), body = {};
+    def.fields.forEach(f => { const v = fd.get(f.k); body[f.k] = f.t === 'number' ? Number(v) : v; });
+    const btn = e.target.querySelector('[type=submit]'); btn.disabled = true;
+    try {
+      editing ? await api.update(res, row.id, body) : await api.create(res, body);
+      await reload(res, ...(res === 'transactions' ? [] : []));
+      closeModal(); toast(editing ? `${def.singular} updated` : `${def.singular} created`); render();
+    } catch (err) { toast('Failed: ' + err.message, true); btn.disabled = false; }
+  };
+}
+
+/* ───────────── Delete ───────────── */
+function confirmDelete(res, row) {
+  const def = R[res];
+  const note = def.depends.length ? `<p style="color:var(--muted)">Related ${def.depends.join(' & ')} will be deleted too.</p>` : '';
+  openModal(`
+    <header><h2>Delete ${def.singular.toLowerCase()}?</h2></header>
+    <div class="body"><p>You are about to delete <b>${esc(row.name || row.description || row.id)}</b>. This can't be undone.</p>${note}
+    <div class="foot"><button class="btn" id="cancel">Cancel</button><button class="btn danger" id="ok">${icon('trash')} Delete</button></div></div>`);
+  $('#cancel').onclick = closeModal;
+  $('#ok').onclick = async () => {
+    try {
+      await api.remove(res, row.id, def.depends);
+      await loadAll(); closeModal(); toast(`${def.singular} deleted`); render();
+    } catch (err) { toast('Failed: ' + err.message, true); }
+  };
+}
+
+/* ───────────── CSV export ───────────── */
+function exportCSV(res) {
+  const rows = viewRows(res);
+  if (!rows.length) return toast('Nothing to export', true);
+  const keys = [...new Set(rows.flatMap(Object.keys))].filter(k => k !== '$schema');
+  const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+  const csv = [keys.join(','), ...rows.map(r => keys.map(k => q(r[k])).join(','))].join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv'}));
+  a.download = `${res}-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(a.href);
+  toast(`Exported ${rows.length} rows`);
+}
+
+/* ───────────── Theme, shortcuts, connection ───────────── */
+const root = document.documentElement;
+root.dataset.theme = localStorage.getItem('ledger_theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+$('#theme').onclick = () => { root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('ledger_theme', root.dataset.theme); };
+$('#conn').onclick = () => {
+  const v = prompt('JSON Server URL', API);
+  if (v) { localStorage.setItem('ledger_api', v.trim()); location.reload(); }
+};
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (e.key === '/' && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) { const q = $('#q'); if (q) { e.preventDefault(); q.focus(); } }
+});
+
+/* ───────────── Boot ───────────── */
+(async function init() {
+  $('#connText').textContent = API.replace(/^https?:\/\//, '');
+  try {
+    await loadAll();
+    $('#dot').className = 'dot ok';
+    const latest = [...new Set(state.data.transactions.map(t => String(t.date||'').slice(0,7)))].sort().pop();
+    const cur = new Date().toISOString().slice(0,7);
+    state.month = state.data.transactions.some(t => String(t.date).startsWith(cur)) ? cur : (latest || 'all');
+    render();
+  } catch (err) {
+    $('#dot').className = 'dot bad';
+    $('#topbar').innerHTML = '';
+    $('#view').innerHTML = `<div class="card errbox"><div style="font-size:42px">🔌</div><h2>Can't reach JSON Server</h2>
+      <p style="color:var(--muted);margin:10px 0 18px">Tried <code>${esc(API)}</code> — ${esc(err.message)}.<br>Make sure the server is running and your <code>db.json</code> has users, accounts, categories, transactions and budgets.</p>
+      <button class="btn primary" onclick="location.reload()">Retry</button></div>`;
+  }
+})();
+</script>
+</body>
+</html>

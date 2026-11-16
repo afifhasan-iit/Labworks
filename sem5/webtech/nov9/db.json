@@ -1,0 +1,263 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Afif",
+      "email": "afif@example.com",
+      "currency": "USD"
+    },
+    {
+      "id": "2",
+      "name": "Mehedi",
+      "email": "mehedi@example.com",
+      "currency": "USD"
+    },
+    {
+      "id": "b_KNraHfiVU",
+      "author": "John Doe",
+      "title": "johndoe@example.com",
+      "age": 30
+    },
+    {
+      "id": "exKWpdUAOv0",
+      "author": "John Doe",
+      "title": "johndoe@example.com",
+      "age": 30
+    }
+  ],
+  "accounts": [
+    {
+      "id": "1",
+      "userId": "1",
+      "name": "Main Checking",
+      "type": "checking",
+      "balance": 3250.75,
+      "currency": "USD"
+    },
+    {
+      "id": "2",
+      "userId": "1",
+      "name": "Emergency Savings",
+      "type": "savings",
+      "balance": 8200,
+      "currency": "USD"
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "name": "Visa Credit Card",
+      "type": "credit_card",
+      "balance": -420.3,
+      "currency": "USD"
+    },
+    {
+      "id": "4",
+      "userId": "2",
+      "name": "Everyday Checking",
+      "type": "checking",
+      "balance": 1780.4,
+      "currency": "USD"
+    }
+  ],
+  "categories": [
+    {
+      "id": "1",
+      "name": "Salary",
+      "type": "income"
+    },
+    {
+      "id": "2",
+      "name": "Freelance",
+      "type": "income"
+    },
+    {
+      "id": "3",
+      "name": "Rent",
+      "type": "expense"
+    },
+    {
+      "id": "4",
+      "name": "Groceries",
+      "type": "expense"
+    },
+    {
+      "id": "5",
+      "name": "Utilities",
+      "type": "expense"
+    },
+    {
+      "id": "6",
+      "name": "Transport",
+      "type": "expense"
+    },
+    {
+      "id": "7",
+      "name": "Dining Out",
+      "type": "expense"
+    },
+    {
+      "id": "8",
+      "name": "Entertainment",
+      "type": "expense"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "1",
+      "accountId": "1",
+      "categoryId": "1",
+      "type": "income",
+      "amount": 3500,
+      "description": "October salary",
+      "date": "2026-10-31"
+    },
+    {
+      "id": "2",
+      "accountId": "1",
+      "categoryId": "3",
+      "type": "expense",
+      "amount": 1200,
+      "description": "November rent",
+      "date": "2026-11-01"
+    },
+    {
+      "id": "3",
+      "accountId": "1",
+      "categoryId": "4",
+      "type": "expense",
+      "amount": 86.45,
+      "description": "Weekly groceries",
+      "date": "2026-11-02"
+    },
+    {
+      "id": "4",
+      "accountId": "3",
+      "categoryId": "7",
+      "type": "expense",
+      "amount": 42.9,
+      "description": "Dinner with friends",
+      "date": "2026-11-03"
+    },
+    {
+      "id": "5",
+      "accountId": "1",
+      "categoryId": "5",
+      "type": "expense",
+      "amount": 74.2,
+      "description": "Electricity bill",
+      "date": "2026-11-04"
+    },
+    {
+      "id": "6",
+      "accountId": "1",
+      "categoryId": "6",
+      "type": "expense",
+      "amount": 30,
+      "description": "Monthly transit pass",
+      "date": "2026-11-05"
+    },
+    {
+      "id": "7",
+      "accountId": "1",
+      "categoryId": "2",
+      "type": "income",
+      "amount": 450,
+      "description": "Website project payment",
+      "date": "2026-11-06"
+    },
+    {
+      "id": "8",
+      "accountId": "3",
+      "categoryId": "8",
+      "type": "expense",
+      "amount": 15.99,
+      "description": "Streaming subscription",
+      "date": "2026-11-07"
+    },
+    {
+      "id": "9",
+      "accountId": "1",
+      "categoryId": "4",
+      "type": "expense",
+      "amount": 63.1,
+      "description": "Groceries",
+      "date": "2026-11-08"
+    },
+    {
+      "id": "10",
+      "accountId": "4",
+      "categoryId": "1",
+      "type": "income",
+      "amount": 2800,
+      "description": "October salary",
+      "date": "2026-10-30"
+    },
+    {
+      "id": "11",
+      "accountId": "4",
+      "categoryId": "3",
+      "type": "expense",
+      "amount": 950,
+      "description": "November rent",
+      "date": "2026-11-01"
+    },
+    {
+      "id": "12",
+      "accountId": "4",
+      "categoryId": "4",
+      "type": "expense",
+      "amount": 54.8,
+      "description": "Groceries",
+      "date": "2026-11-03"
+    },
+    {
+      "id": "13",
+      "accountId": "4",
+      "categoryId": "6",
+      "type": "expense",
+      "amount": 22.5,
+      "description": "Ride share",
+      "date": "2026-11-06"
+    },
+    {
+      "id": "14",
+      "accountId": "4",
+      "categoryId": "7",
+      "type": "expense",
+      "amount": 28.75,
+      "description": "Lunch",
+      "date": "2026-11-08"
+    }
+  ],
+  "budgets": [
+    {
+      "id": "1",
+      "userId": "1",
+      "categoryId": "4",
+      "month": "2026-11",
+      "limit": 400
+    },
+    {
+      "id": "2",
+      "userId": "1",
+      "categoryId": "7",
+      "month": "2026-11",
+      "limit": 150
+    },
+    {
+      "id": "3",
+      "userId": "1",
+      "categoryId": "8",
+      "month": "2026-11",
+      "limit": 60
+    },
+    {
+      "id": "4",
+      "userId": "2",
+      "categoryId": "4",
+      "month": "2026-11",
+      "limit": 300
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
