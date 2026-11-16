@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Superhero Draft</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Superhero Draft</h1>
+    <div id="turn-indicator">Player 1's turn</div>
+  </header>
+
+  <section id="controls">
+
+    <label for="publisher-filter">Publisher:</label>
+    <select id="publisher-filter">
+      <option value="">All</option>
+      <option value="Marvel Comics">Marvel</option>
+      <option value="DC Comics">DC</option>
+    </select>
+
+    <label for="sort-stat">Sort by:</label>
+    <select id="sort-stat">
+      <option value="">None</option>
+      <option value="intelligence">Intelligence</option>
+      <option value="strength">Strength</option>
+      <option value="speed">Speed</option>
+      <option value="durability">Durability</option>
+      <option value="power">Power</option>
+      <option value="combat">Combat</option>
+    </select>
+
+
+    <button id="sort-order-btn">Desc</button>
+  </section>
+
+
+  <main id="teams-and-pool">
+    
+    <aside class="team-panel" id="team1-panel">
+      <h2>Player 1</h2>
+      <ul id="team1-list"></ul>
+    </aside>
+
+    <section id="pool-section">
+      <div id="character-pool"></div>
+      <div id="pagination">
+        <button id="prev-page">Prev</button>
+        <span id="page-info">Page 1</span>
+        <button id="next-page">Next</button>
+      </div>
+    </section>
+
+    <aside class="team-panel" id="team2-panel">
+      <h2>Player 2</h2>
+      <ul id="team2-list"></ul>
+    </aside>
+  </main>
+
+  <!-- Edit Hero Modal -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <h2 id="edit-hero-name">Edit Hero</h2>
+      <p>Team upgrade points available: <strong>200</strong></p>
+
+      <label>Intelligence <input type="number" id="edit-intelligence" min="0" /></label>
+      <label>Strength <input type="number" id="edit-strength" min="0" /></label>
+      <label>Speed <input type="number" id="edit-speed" min="0" /></label>
+      <label>Durability <input type="number" id="edit-durability" min="0" /></label>
+      <label>Power <input type="number" id="edit-power" min="0" /></label>
+      <label>Combat <input type="number" id="edit-combat" min="0" /></label>
+
+      <p>Team points used: <span id="edit-total">0</span> / 200</p>
+      <p id="edit-error" class="error hidden">The team cannot use more than 200 upgrade points!</p>
+
+      <button id="edit-save-btn">Save</button>
+      <button id="edit-cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
